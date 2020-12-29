@@ -1,0 +1,13 @@
+.Item {
+    display: flex;
+    align-items: center;
+    width: 300px;
+}
+
+ListItem {
+    justify-self: flex-start;
+}
+
+DeleteIcon {
+    justify-self: flex-end;
+}

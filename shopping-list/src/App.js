@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Item from './components/Item'
 import { Button, FormControl, Input, InputLabel } from '@material-ui/core';
+import './App.css';
 
 import firebase from 'firebase';
 import { db } from './firebase/firebase';
@@ -11,7 +12,7 @@ function App() {
 
   useEffect(() => {
     db.collection('items').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      setItems(snapshot.docs.map(doc => doc.data().item))
+      setItems(snapshot.docs.map(doc => ({id: doc.id, item: doc.data().item}) ))
     })
   }, []);
 
@@ -40,7 +41,7 @@ function App() {
 
       <ul>
         {items.map(item => 
-          <Item description={item} />
+          <Item id={item.id} description={item.item} />
         )}
       </ul>
     </div>

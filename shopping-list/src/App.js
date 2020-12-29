@@ -1,23 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import Item from './components/Item'
+import { Button, FormControl, Input, InputLabel } from '@material-ui/core';
+
+import firebase from 'firebase';
+import { db } from './firebase/firebase';
 
 function App() {
+  const [items, setItems] = useState([]);
+  const [input, setInput] = useState('')
+
+  useEffect(() => {
+    db.collection('items').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      setItems(snapshot.docs.map(doc => doc.data().item))
+    })
+  }, []);
+
+  const addItem = (e) => {
+    e.preventDefault();
+
+    db.collection('items').add({
+      item: input,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    setInput('');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Lista de Compras</h1>
+      <form>
+        <FormControl>
+          <InputLabel>Adicione um item</InputLabel>
+          <Input value={input} onChange={ e => setInput(e.target.value)} />
+        </FormControl>
+
+        <Button disabled={!input} type="submit" onClick={addItem} variant='contained' color='primary' >+</Button>
+      </form>
+
+
+      <ul>
+        {items.map(item => 
+          <Item description={item} />
+        )}
+      </ul>
     </div>
   );
 }
